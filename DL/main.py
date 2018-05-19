@@ -86,9 +86,7 @@ def train(epoch):
     correct = 0
     total = 0
 
-    batch_idx = 0
-    for img in train_loader:
-        batch_idx += 1
+    for batch_idx, img in enumerate(train_loader):
         inputs = Variable(img[0])
         targets = Variable(img[1])
         if use_cuda:
@@ -127,8 +125,7 @@ def test(epoch):
     correct = 0
     total = 0
 
-    batch_idx = 0
-    for img in val_loader:
+    for batch_idx, img in val_loader:
         batch_idx += 1
         inputs = torch.autograd.Variable(img[0])
         targets = torch.autograd.Variable(img[1])
@@ -183,5 +180,4 @@ def test(epoch):
 
 for epoch in range(start_epoch, start_epoch+200):
     train(epoch)
-    #if (epoch + 1)%5 == 0:
     test(epoch)
