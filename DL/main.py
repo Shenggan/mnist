@@ -36,17 +36,6 @@ start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
 # Data
 print('==> Preparing data..')
-transform_train = transforms.Compose([
-    transforms.RandomCrop(32, padding=4),
-    transforms.RandomHorizontalFlip(),
-    transforms.ToTensor(),
-    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-])
-
-transform_test = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-])
 
 train_loader = get_loader_train(size=args.numlabels)
 val_loader = get_loader_val()
@@ -86,9 +75,7 @@ def train(epoch):
     correct = 0
     total = 0
 
-    for batch_idx, img in enumerate(train_loader):
-        inputs = Variable(img[0])
-        targets = Variable(img[1])
+    for batch_idx, (inputs, targets) in enumerate(train_loader):
         if use_cuda:
            inputs, targets = inputs.cuda(), targets.cuda()
    
@@ -125,10 +112,7 @@ def test(epoch):
     correct = 0
     total = 0
 
-    for batch_idx, img in val_loader:
-        batch_idx += 1
-        inputs = torch.autograd.Variable(img[0])
-        targets = torch.autograd.Variable(img[1])
+    for batch_idx, (inputs, targets) in enumerate(val_loader):
         if use_cuda:
            inputs, targets = inputs.cuda(), targets.cuda()
         optimizer.zero_grad()

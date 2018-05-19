@@ -34,11 +34,6 @@ class dataset1(torch.utils.data.Dataset):
         tag = self.label[ith].astype('int64')
         return im, tag
 
-xform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.1307,), (0.3081,))
-    ])
-
 transform_train = transforms.Compose([
     #transforms.RandomCrop(45, padding=4),
     #transforms.RandomHorizontalFlip(),
