@@ -47,7 +47,7 @@ class DeepGenerativeModel(VariationalAutoencoder):
 
         for m in self.modules():
             if isinstance(m, nn.Linear):
-                init.xavier_normal(m.weight.data)
+                init.xavier_normal_(m.weight.data)
                 if m.bias is not None:
                     m.bias.data.zero_()
 
@@ -200,7 +200,7 @@ class LadderDeepGenerativeModel(DeepGenerativeModel):
 
         for m in self.modules():
             if isinstance(m, nn.Linear):
-                init.xavier_normal(m.weight.data)
+                init.xavier_normal_(m.weight.data)
                 if m.bias is not None:
                     m.bias.data.zero_()
 

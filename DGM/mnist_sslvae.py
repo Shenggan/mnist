@@ -3,11 +3,53 @@ import numpy as np
 import sys
 from itertools import repeat, cycle
 from torch.autograd import Variable
+import torch.utils.data as data
 from inference import SVI, DeterministicWarmup, ImportanceWeightedSampler
 from models import LadderDeepGenerativeModel
+from PIL import Image
 
-torch.manual_seed(1337)
-np.random.seed(1337)
+class MNIST2(data.Dataset):
+    def __init__(self, root, train=True, transform=None, target_transform=None):
+        self.root = root
+        self.transform = transform
+        self.target_transform = target_transform
+        self.train = train  # training set or test set
+
+        if self.train:
+            self.train_data = np.fromfile("DATA/mnist_train/mnist_train_data", dtype=np.uint8)
+            self.train_data = torch.from_numpy(np.reshape(self.train_data, (-1, 45, 45)))
+            self.train_labels = torch.from_numpy(np.fromfile("DATA/mnist_train/mnist_train_label", dtype=np.uint8))
+
+        else:
+            self.test_data = np.fromfile("DATA/mnist_test/mnist_test_data", dtype=np.uint8)
+            self.test_data = torch.from_numpy(np.reshape(self.test_data, (-1, 45, 45)))
+            self.test_labels = torch.from_numpy(np.fromfile("DATA/mnist_test/mnist_test_label", dtype=np.uint8))
+
+    def __getitem__(self, index):
+        if self.train:
+            img, target = self.train_data[index], self.train_labels[index]
+        else:
+            img, target = self.test_data[index], self.test_labels[index]
+
+        # doing this so that it is consistent with all other datasets
+        # to return a PIL Image
+        img = Image.fromarray(img.numpy(), mode='L')
+        img = img.resize((28, 28))
+
+        if self.transform is not None:
+            img = self.transform(img)
+
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+
+        return img, target
+
+    def __len__(self):
+        if self.train:
+            return 60000
+        else:
+            return 10000
+
 
 cuda = torch.cuda.is_available()
 print("CUDA: {}".format(cuda))
@@ -17,7 +59,7 @@ def binary_cross_entropy(r, x):
     return -torch.sum(x * torch.log(r + 1e-8) + (1 - x) * torch.log(1 - r + 1e-8), dim=-1)
 
 n_labels = 10
-def get_mnist(location="./", batch_size=64, labels_per_class=100):
+def get_mnist(location="./DATA", batch_size=64, labels_per_class=100):
     from functools import reduce
     from operator import __or__
     from torch.utils.data.sampler import SubsetRandomSampler
@@ -26,10 +68,16 @@ def get_mnist(location="./", batch_size=64, labels_per_class=100):
     from utils import onehot
 
     flatten_bernoulli = lambda x: transforms.ToTensor()(x).view(-1).bernoulli()
+    # flatten_bernoulli = lambda x: transforms.Compose([
+    #     transforms.Resize(28),
+    #     #transforms.RandomHorizontalFlip(),
+    #     transforms.ToTensor()
+    #     # transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    # ])(x).view(-1).bernoulli(),
 
-    mnist_train = MNIST(location, train=True, download=True,
+    mnist_train = MNIST2(location, train=True,
                         transform=flatten_bernoulli, target_transform=onehot(n_labels))
-    mnist_valid = MNIST(location, train=False, download=True,
+    mnist_valid = MNIST2(location, train=False,
                         transform=flatten_bernoulli, target_transform=onehot(n_labels))
 
     def get_sampler(labels, n=None):
@@ -68,7 +116,7 @@ if __name__ == "__main__":
     sampler = ImportanceWeightedSampler(mc=1, iw=1)
 
     elbo = SVI(model, likelihood=binary_cross_entropy, beta=beta, sampler=sampler)
-    optimizer = torch.optim.Adam(model.parameters(), lr=3e-4, betas=(0.9, 0.999))
+    optimizer = torch.optim.Adam(model.parameters(), lr=5e-5, betas=(0.9, 0.999))
 
     epochs = 251
     best = 0.0
@@ -81,11 +129,10 @@ if __name__ == "__main__":
         for (x, y), (u, _) in zip(cycle(labelled), unlabelled):
             # Wrap in variables
             # x, y, u = Variable(x), Variable(y), Variable(u)
-
             if cuda:
                 # They need to be on the same device and be synchronized.
-                x, y = x.cuda(device=0), y.cuda(device=0)
-                u = u.cuda(device=0)
+                x, y = x.cuda(), y.cuda()
+                u = u.cuda()
 
             L = -elbo(x, y)
             U = -elbo(u)
@@ -124,7 +171,7 @@ if __name__ == "__main__":
                 # x, y = Variable(x), Variable(y)
 
                 if cuda:
-                    x, y = x.cuda(device=0), y.cuda(device=0)
+                    x, y = x.cuda(), y.cuda()
 
                 L = -elbo(x, y)
                 U = -elbo(x)

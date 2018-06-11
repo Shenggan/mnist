@@ -38,7 +38,7 @@ def onehot(k):
     def encode(label):
         y = torch.zeros(k)
         if label < k:
-            y[label] = 1
+            y[label.data.numpy()] = 1
         return y
     return encode
 
