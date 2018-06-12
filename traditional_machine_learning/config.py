@@ -1,3 +1,5 @@
+"""The confif file for Traditional Machine Learning part"""
+
 TRAIN_DATA = "../mnist/mnist_train/mnist_train_data"
 TRAIN_LABEL = "../mnist/mnist_train/mnist_train_label"
 TEST_DATA = "../mnist/mnist_test/mnist_test_data"
