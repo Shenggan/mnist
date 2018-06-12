@@ -16,12 +16,12 @@ class MNIST2(data.Dataset):
         self.train = train  # training set or test set
 
         if self.train:
-            self.train_data = np.fromfile("DATA/mnist_train/mnist_train_data", dtype=np.uint8)
+            self.train_data = np.fromfile("../mnist/mnist_train/mnist_train_data", dtype=np.uint8)
             self.train_data = torch.from_numpy(np.reshape(self.train_data, (-1, 45, 45)))
             self.train_labels = torch.from_numpy(np.fromfile("DATA/mnist_train/mnist_train_label", dtype=np.uint8))
 
         else:
-            self.test_data = np.fromfile("DATA/mnist_test/mnist_test_data", dtype=np.uint8)
+            self.test_data = np.fromfile("../mnist/mnist_test/mnist_test_data", dtype=np.uint8)
             self.test_data = torch.from_numpy(np.reshape(self.test_data, (-1, 45, 45)))
             self.test_labels = torch.from_numpy(np.fromfile("DATA/mnist_test/mnist_test_label", dtype=np.uint8))
 

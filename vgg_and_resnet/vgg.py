@@ -1,6 +1,7 @@
 '''
 Modified from https://github.com/pytorch/vision.git
 '''
+
 import math
 
 import torch.nn as nn
@@ -16,6 +17,7 @@ class VGG(nn.Module):
     '''
     VGG model
     '''
+
     def __init__(self, features):
         super(VGG, self).__init__()
         self.features = features
@@ -28,17 +30,16 @@ class VGG(nn.Module):
             nn.ReLU(True),
             nn.Linear(512, 10),
         )
-         # Initialize weights
+        # Initialize weights
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
                 m.weight.data.normal_(0, math.sqrt(2. / n))
                 m.bias.data.zero_()
 
-
     def forward(self, x):
         x = self.features(x)
-        #print x
+        # print x
         x = x.view(x.size(0), -1)
         x = self.classifier(x)
         return x
@@ -70,6 +71,7 @@ cfg = {
 
 net = VGG(make_layers(cfg['D']))
 print(net.state_dict().keys())
+
 
 def vgg11():
     """VGG 11-layer model (configuration "A")"""

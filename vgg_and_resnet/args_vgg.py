@@ -2,11 +2,12 @@
 
 import argparse
 
-import resnet
+import vgg
 
-model_names = sorted(name for name in resnet.__dict__)
-
-print(model_names)
+model_names = sorted(name for name in vgg.__dict__
+                     if name.islower() and not name.startswith("__")
+                     and name.startswith("vgg")
+                     and callable(vgg.__dict__[name]))
 
 
 def args():
@@ -32,13 +33,13 @@ def args():
                         type=float, help='learning rate')
     parser.add_argument('--resume', '-r', action='store_true',
                         help='resume from checkpoint')
-    parser.add_argument('--arch', '-a', metavar='ARCH', default='ResNet18',
+    parser.add_argument('--arch', '-a', metavar='ARCH', default='vgg11_bn',
                         choices=model_names,
                         help='model architecture: ' + ' | '.join(model_names) +
-                             ' (default: ResNet18)')
+                             ' (default: vgg11)')
     parser.add_argument('--save_log', dest='save_log',
                         help='The directory used to save the log',
-                        default='logs/resnet18', type=str)
+                        default='logs/vgg11', type=str)
     parser.add_argument('--low_lr', default=5, type=int, help='decrease_lr')
     args = parser.parse_args()
     return args

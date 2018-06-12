@@ -4,6 +4,7 @@ from torchvision import transforms
 import numpy as np
 from PIL import Image
 
+
 class dataset1(torch.utils.data.Dataset):
     def __init__(self, train=1, size=1000, xform=None):
         if xform:
@@ -11,11 +12,15 @@ class dataset1(torch.utils.data.Dataset):
         self.train = train
         self.size = size
         if self.train:
-            self.data = np.fromfile("DATA/mnist_train/mnist_train_data", dtype=np.uint8)
-            self.label = np.fromfile("DATA/mnist_train/mnist_train_label", dtype=np.uint8)
+            self.data = np.fromfile(
+                "../mnist/mnist_train/mnist_train_data", dtype=np.uint8)
+            self.label = np.fromfile(
+                "../mnist/mnist_train/mnist_train_label", dtype=np.uint8)
         else:
-            self.data = np.fromfile("DATA/mnist_test/mnist_test_data", dtype=np.uint8)
-            self.label = np.fromfile("DATA/mnist_test/mnist_test_label", dtype=np.uint8)
+            self.data = np.fromfile(
+                "../mnist/mnist_test/mnist_test_data", dtype=np.uint8)
+            self.label = np.fromfile(
+                "../mnist/mnist_test/mnist_test_label", dtype=np.uint8)
 
         if self.train:
             self.data = self.data.reshape(60000, 45, 45)
@@ -24,7 +29,7 @@ class dataset1(torch.utils.data.Dataset):
             self.data = self.data.reshape(10000, 45, 45)
 
         self.len = len(self.data)
-        print (self.len)
+        print(self.len)
 
     def __len__(self):
         return self.len
@@ -34,9 +39,10 @@ class dataset1(torch.utils.data.Dataset):
         tag = self.label[ith].astype('int64')
         return im, tag
 
+
 transform_train = transforms.Compose([
     #transforms.RandomCrop(45, padding=4),
-    #transforms.RandomHorizontalFlip(),
+    # transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
@@ -45,6 +51,7 @@ transform_test = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
+
 
 def get_loader_train(batch_size=32, num_workers=8, size=60000, shuffle=True, pin_memory=False):
     return torch.utils.data.DataLoader(

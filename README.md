@@ -43,7 +43,13 @@ In this project, we investigate the mainstream techniques used in hand-written d
     python main_resnet.py
     ```
 
-4. Deep Generate Model:
+4. Virtual Adersarial Training
+
+    ```shell
+    
+    ```
+
+5. Deep Generate Model:
 
     ```shell
     cd deep_generate_model/

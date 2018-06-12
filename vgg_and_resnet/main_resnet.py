@@ -1,13 +1,12 @@
 '''Train MNIST with either supervised learning or virtual adversarial training in PyTorch.'''
+
 from __future__ import print_function
 
 import os
 
 import matplotlib as mpl
-mpl.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
-
 import torch
 import torch.backends.cudnn as cudnn
 import torch.nn as nn
@@ -15,13 +14,15 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
+from torch.autograd import Variable
+
+import resnet
 from args_res import args
 from logger import Logger
 from mnistloader import *
-import resnet
-from torch.autograd import Variable
 from utils import progress_bar
 
+mpl.use('Agg')
 plt.ioff()
 
 
@@ -79,8 +80,8 @@ def train(epoch):
 
     for batch_idx, (inputs, targets) in enumerate(train_loader):
         if use_cuda:
-           inputs, targets = inputs.cuda(), targets.cuda()
-   
+            inputs, targets = inputs.cuda(), targets.cuda()
+
         optimizer.zero_grad()
         outputs = net.forward(inputs)
 
@@ -89,7 +90,8 @@ def train(epoch):
         if args.training == 'supervised':
             additional_loss = 0
         elif args.training == 'vat':
-            vat_loss = vat.virtual_adversarial_loss(inputs, outputs, use_gpu=use_cuda)
+            vat_loss = vat.virtual_adversarial_loss(
+                inputs, outputs, use_gpu=use_cuda)
             additional_loss = vat_loss
 
         loss = dll_loss + additional_loss
@@ -125,9 +127,9 @@ def test(epoch):
 
     for batch_idx, (inputs, targets) in enumerate(val_loader):
         if use_cuda:
-           inputs, targets = inputs.cuda(), targets.cuda()
+            inputs, targets = inputs.cuda(), targets.cuda()
         optimizer.zero_grad()
-        
+
         outputs = net.forward(inputs)
 
         dll_loss = nn.CrossEntropyLoss()(outputs, targets)
@@ -135,7 +137,8 @@ def test(epoch):
         if args.training == 'supervised':
             additional_loss = 0
         elif args.training == 'vat':
-            vat_loss = vat.virtual_adversarial_loss(inputs, outputs, use_gpu=use_cuda)
+            vat_loss = vat.virtual_adversarial_loss(
+                inputs, outputs, use_gpu=use_cuda)
             additional_loss = vat_loss
 
         loss = dll_loss + additional_loss
@@ -169,7 +172,8 @@ def test(epoch):
         }
         if not os.path.isdir('checkpoint'):
             os.mkdir('checkpoint')
-        torch.save(state, './checkpoint/ckpt_{0}_{1}.t7'.format(args.arch,args.numlabels))
+        torch.save(
+            state, './checkpoint/ckpt_{0}_{1}.t7'.format(args.arch, args.numlabels))
         best_acc = acc
 
 
