@@ -24,7 +24,7 @@ def argparser():
     parser = argparse.ArgumentParser(
         description='Traditioanl Machine Learinng Training Argumentation')
     parser.add_argument('--model_type', type=str,
-                        choices=['svm', 'nusvm', 'knn', 'lr'], default="svm")
+                        choices=['svm', 'nusvm', 'knn', 'sr'], default="svm")
     parser.add_argument('--pca', action='store_true')
     parser.add_argument('--dim', type=int, default=100)
     args = parser.parse_args()
@@ -152,7 +152,7 @@ def main(args):
             NuSVM(X_train_temp, Y_train_temp, X_test, Y_test)
         if model_type == 'knn':
             KNN(X_train_temp, Y_train_temp, X_test, Y_test)
-        if model_type == 'lr':
+        if model_type == 'sr':
             LR(X_train_temp, Y_train_temp, X_test, Y_test)
 
 

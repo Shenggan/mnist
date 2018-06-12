@@ -1,6 +1,6 @@
 """
 Usage:
-  train.py [--save_filename=<str>] \
+  train_sup.py [--save_filename=<str>] \
   [--num_epochs=<N>] [--batch_size==<N>] \
   [--initial_learning_rate=<float>] [--learning_rate_decay=<float>]\
   [--layer_sizes=<str>] \

@@ -1,7 +1,7 @@
 """
 Usage:
-  test_mnist.py [--load_filename=<name>] \
-  test_mnist.py -h | --help
+  test.py [--load_filename=<name>] \
+  test.py -h | --help
 
 Options:
   -h --help                                 Show this screen.

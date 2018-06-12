@@ -4,16 +4,6 @@ In this project, we investigate the mainstream techniques used in hand-written d
 
 ![mnist](./img/sample.png)
 
-### Overview
-
-1. Traditional Machine Learning
-
-2. ResNet and VGG
-
-3. Virtual Adersarial Training
-
-4. Deep Generate Model
-
 ### Usage
 
 1. Download and extract the dataset:
@@ -24,7 +14,7 @@ In this project, we investigate the mainstream techniques used in hand-written d
 
 2. Traditional Machine Learning:
 
-    You can run *SVM* model just like below. The `model_type` can be `svm`, `nusvm`, `knn`, `lr`. And you can see more optioal with `python main.py --help`
+    You can run *SVM* model just like below. The `model_type` can be `svm`, `nusvm`, `knn`, `sr`. And you can see more optioal with `python main.py --help`
 
     ```shell
     cd traditional_machine_learning/
@@ -46,7 +36,8 @@ In this project, we investigate the mainstream techniques used in hand-written d
 4. Virtual Adersarial Training
 
     ```shell
-    
+    python train_sup.py --cost_type=VAT_finite_diff --epsilon=2.1 --layer_sizes=784-1200-600-300-150-10 --save_filename=<filename>
+    python train_semisup.py --cost_type=VAT_finite_diff --epsilon=0.3 --layer_sizes=784-1200-1200-10 --num_labeled_samples=100 --save_filename=<filename>
     ```
 
 5. Deep Generate Model:
@@ -58,5 +49,21 @@ In this project, we investigate the mainstream techniques used in hand-written d
 
 ### Results
 
-### Reference
+#### Traditional Machine Learning
+
+| Model  | Training Accuracy | Testing Accuracy   | 
+| :--:               | :--:  | :--:   | 
+| Softmax Regression | 32 | 29  |
+| KNN                | - | 89  | 
+| SVM                | **94** | **93**  | 
+| MLP                | 92 | 87  | 
+
+#### Deep Learing Method
+
+| TrainSet Size | VGG   | ResNet | DGM   | VAT   |
+| :--:          | :--:  | :--:   | :--:  | :--:  |
+| 100           | 50.74 | 51.52  | 90.09 | **98.07** |
+| 1000          | 92.23 | 95.81  | **95.98** | -     |
+| 10000         | 98.90 | **98.93**  | 98.65 | -     |
+| 60000(ALL)    | 99.64 | **99.70**  | 99.13 | 99.32 |
 
